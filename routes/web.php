@@ -13,3 +13,4 @@ Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'ind
 
 
 Route::get('/buku', [\App\Http\Controllers\BukuController::class, 'index']);
+Route::get('/books', [\App\Http\Controllers\BookController::class, 'index']);

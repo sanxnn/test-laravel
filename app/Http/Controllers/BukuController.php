@@ -9,6 +9,6 @@ class BukuController extends Controller
     public function index()
     {
         $buku = \App\Models\Buku::all();
-        return view('index', compact('buku'));
+        return view('buku', compact('buku'));
     }
 }
