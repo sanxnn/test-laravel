@@ -6,6 +6,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/kasir', function () {
+    return view('kasir.index');
+});
+
 Route::get('/login', [\App\Http\Controllers\LoginController::class, 'index']);
 Route::post('/login', [\App\Http\Controllers\LoginController::class, 'authenticate'])->name('login');
 Route::post('/logout', [\App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
