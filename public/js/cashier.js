@@ -37,22 +37,6 @@
                 price: 75000
             },
 
-            {
-                id: 5,
-                code: "BRG005",
-                barcode: "899123456005",
-                name: "Minyak Goreng 1 Liter",
-                price: 18000
-            },
-
-            {
-                id: 6,
-                code: "BRG006",
-                barcode: "899123456006",
-                name: "Gula Pasir 1 Kg",
-                price: 17000
-            }
-
         ];
 
 
@@ -515,9 +499,7 @@
             ).innerText = totalQty;
 
 
-            document.getElementById(
-                    "itemCount"
-                ).innerText =
+            document.getElementById("itemCount").innerText =
                 totalQty + " Item";
 
 
@@ -741,27 +723,12 @@
                 payment - total;
 
 
-            alert(
+            const items = encodeURIComponent(JSON.stringify(
+                cart.map(item => ({ id: item.id, qty: item.qty }))
+            ));
+            const method = document.querySelector(".payment-method button.active").innerText.trim();
 
-                "Pembayaran berhasil!\n\n" +
-
-                "Total : " +
-                formatRupiah(total) +
-                "\n" +
-
-                "Bayar : " +
-                formatRupiah(payment) +
-                "\n" +
-
-                "Kembali : " +
-                formatRupiah(change)
-
-            );
-
-
-            // Nantinya dapat diganti:
-            // window.location.href =
-            // "/transaksi/" + transactionId + "/print";
+            window.location.href = `/print-receipt?items=${items}&payment=${payment}&method=${encodeURIComponent(method)}`;
 
         }
 

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ProductCreated;
 use App\Models\Category;
 use App\Models\Product;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -15,12 +17,14 @@ class ProductController extends Controller
     public function index()
     {
         $produk = Product::with('category')->latest()->get();
+
         return view('product.index', compact('produk'));
     }
 
     public function create()
     {
         $kategori = Category::orderBy('name')->get();
+
         return view('product.create', compact('kategori'));
     }
 
@@ -41,7 +45,9 @@ class ProductController extends Controller
             $validated['image'] = $this->processImage($request->file('image'));
         }
 
-        Product::create($validated);
+        $product = Product::create($validated);
+
+        event(new ProductCreated($product));
 
         return redirect()->route('product.index')->with('success', 'Produk berhasil ditambahkan.');
     }
@@ -49,6 +55,7 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $kategori = Category::orderBy('name')->get();
+
         return view('product.edit', compact('product', 'kategori'));
     }
 
@@ -92,6 +99,21 @@ class ProductController extends Controller
         return redirect()->route('product.index')->with('success', 'Produk berhasil dihapus.');
     }
 
+    public function invoice(Product $product)
+    {
+        $order = Product::with('category')->findOrFail($product->id);
+        $invoice = $order;
+        foreach ($invoice as $item) {
+            $item->total_price = $item->price * $item->stock;
+        }
+
+        $invoice->total = $invoice->sum('total_price');
+
+        $pdf = Pdf::loadView('product.invoice', compact('invoice'));
+
+        return $pdf->download('invoice_'.$product->sku.'.pdf');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Helper: Proses Gambar (Resize & Compress)
@@ -104,8 +126,8 @@ class ProductController extends Controller
 
         // Bersihkan nama file dari karakter aneh
         $cleanName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $original);
-        $filename = time() . '_' . $cleanName . '.' . $ext;
-        $path = 'products/' . $filename;
+        $filename = time().'_'.$cleanName.'.'.$ext;
+        $path = 'products/'.$filename;
 
         $manager = new ImageManager(Driver::class);
 

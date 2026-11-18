@@ -20,7 +20,7 @@
 
             <div>
                 <div class="store-name">
-                    TOKO RETAIL MAKMUR
+                    TOKO KOPI KITA
                 </div>
 
                 <div class="store-info">
